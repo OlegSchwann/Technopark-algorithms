@@ -38,7 +38,7 @@ CREATE TABLE tourney( -- шардируется по id
 );
 
 CREATE PUBLICATION publication_tables1; -- for master1
-ALTER PUBLICATION tables1 ADD TABLE
+ALTER PUBLICATION publication_tables1 ADD TABLE
   gamer,
   team,
   game,
@@ -49,3 +49,16 @@ CREATE SUBSCRIPTION subscription_tables1 -- for slave1
   CONNECTION 'host=192.168.1.13 port=5401 user=postgres dbname=postgres'
   PUBLICATION publication_tables1;
 
+CREATE PUBLICATION publication_tables2; -- for master2
+ALTER PUBLICATION publication_tables1 ADD TABLE
+  gamer,
+  team,
+  game,
+  match,
+  tourney;
+
+CREATE SUBSCRIPTION subscription_tables2 -- for slave2
+  CONNECTION 'host=192.168.1.151 port=5404 user=postgres dbname=postgres'
+  PUBLICATION publication_tables2;
+
+INSERT INTO game (id, name, developer, description) VALUES (1, 'Dota', 'valve', 'Самая задротская игра последнего десятилетия');
