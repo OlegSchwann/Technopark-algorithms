@@ -88,20 +88,14 @@ namespace my {
     class Node {
     public:
         Stored *value;
-        Node *left;
-        Node *right;
+        Node *left = nullptr;
+        Node *right = nullptr;
 
         Node() = delete;
 
-        Node(Stored *init_ptr) : left(nullptr), right(nullptr) {
-            value = init_ptr;
-        }
+        explicit Node(Stored *init_ptr) : value(init_ptr){};
 
-        ~Node() {
-            delete left;
-            delete right;
-            delete value;
-        }
+        ~Node() = default; // что б не удалялось рекурсивно.
     };
 
     template<typename Stored, typename Less = std::less<Stored>>
@@ -111,23 +105,10 @@ namespace my {
         u_int length = 0;
         Less less;
 
-//        class iterator {
-//        public:
-//            iterator(DataType * ptr): ptr(ptr){}
-//            iterator operator++() { ++ptr; return *this; }
-//            bool operator!=(const iterator & other) { return ptr != other.ptr; }
-//            const DataType& operator*() const { return *ptr; }
-//        private:
-//            DataType* ptr;
-//        };
     public:
-        UnbalancedTree() {
+        UnbalancedTree() = default;
 
-        }
-
-        ~UnbalancedTree() {
-            delete root;
-        }
+        ~UnbalancedTree();
 
         void add(Stored &value);
 
@@ -137,11 +118,11 @@ namespace my {
             return length;
         }
 
-        void print();
+        void print(std::ostream& os) const;
 
-//        iterator begin() const;
-//
-//        iterator end() const;
+        friend std::ostream& operator<<(std::ostream& os, const UnbalancedTree& ut){
+            ut.print(os);
+        };
     };
 
 
@@ -169,9 +150,9 @@ namespace my {
     }
 
     template<typename Stored, typename Less>
-    void UnbalancedTree<Stored, Less>::print() {
+    void UnbalancedTree<Stored, Less>::print(std::ostream& os) const {
         // стек, хранящий текущее звено и состояние обхода
-        enum State {        // последнее совершённое над Node действие
+        enum State {       // последнее совершённое над Node действие
             PutNode,       // положили в стек
             OutputValue,   // вывели хранимое значение
             OutputLeft,    // вывели левое дерево
@@ -182,12 +163,12 @@ namespace my {
         if (root != nullptr) {
             node_stack.push({PutNode, root});
         };
-        while (node_stack.size() != 0) {
+        while (!node_stack.empty()) {
             auto &state_and_node = node_stack.top();
             switch (state_and_node.first) {
                 case PutNode: {
                     state_and_node.first = OutputValue;
-                    std::cout << *(state_and_node.second->value) << " ";
+                    os << *(state_and_node.second->value) << " ";
                 }
                     break;
                 case OutputValue: {
@@ -212,6 +193,51 @@ namespace my {
         }
     };
 
+    template<typename Stored, typename Less>
+    UnbalancedTree<Stored, Less>::~UnbalancedTree() {
+        // стек, хранящий текущее звено и состояние обхода
+        enum State {       // последнее совершённое над Node действие
+            PutNode,       // положили в стек
+            DeleteValue,   // удалили хранимое значение
+            DeleteLeft,    // удалили левое дерево
+            DeleteRight    // удалили правое дерево
+        };
+
+        auto node_stack = std::stack<std::pair<State, Node<Stored> *>>();
+        if (root != nullptr) {
+            node_stack.push({PutNode, root});
+        };
+        while (!node_stack.empty()) {
+            auto &state_and_node = node_stack.top();
+            switch (state_and_node.first) {
+                case PutNode: {
+                    state_and_node.first = DeleteValue;
+                    delete state_and_node.second->value;
+                }
+                    break;
+                case DeleteValue: {
+                    state_and_node.first = DeleteLeft;
+                    if (state_and_node.second->left != nullptr) { // есть левое поддерево
+                        node_stack.push({PutNode, state_and_node.second->left});
+                    }
+                }
+                    break;
+                case DeleteLeft: {
+                    state_and_node.first = DeleteRight;
+                    if (state_and_node.second->right != nullptr) { // есть правое поддерево
+                        node_stack.push({PutNode, state_and_node.second->right});
+                    }
+                }
+                    break;
+                case DeleteRight: {
+                    delete state_and_node.second;
+                    node_stack.pop();
+                }
+                    break;
+            }
+        }
+    };
+
 }
 
 
@@ -224,6 +250,6 @@ int main() {
         std::cin >> node;
         tree.add(node);
     }
-    tree.print();
+    std::cout << tree;
     return 0;
 }
