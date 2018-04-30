@@ -52,6 +52,10 @@ OK
 #include <unordered_set>
 #include <exception>
 
+/*
+TODO: переделать - не дёргать new, переделать, что бы
+*/
+
 
 #define DELLPTR (reinterpret_cast<std::string*>(1))
 
