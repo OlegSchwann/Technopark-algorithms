@@ -49,15 +49,7 @@ OK
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <unordered_set>
 #include <exception>
-
-/*
-TODO: переделать - не дёргать new, переделать, что бы
-*/
-
-
-#define DELLPTR (reinterpret_cast<std::string*>(1))
 
 // Хеш-функция строки.
 // принимает указатель на нультерминированную строку
@@ -114,7 +106,7 @@ namespace my {
         // массив хранимых значений
         // (void*)0, если это пустая ячейка.
         // (void*)1, если это удалённая ячейка. Это также невалидный указатель, так как 4 кб защищается в начале программы минимум.
-        std::string **_array;
+        std::string *_array;
 
         // увеличение в 4 раза. важно, что бы оставалось степенью двойки.
         void resize();
@@ -135,19 +127,13 @@ namespace my {
     };
 
     unordered_set::unordered_set() {
-        _array = new std::string *[initial_size];
-        std::memset(_array, 0, sizeof(std::string *) * initial_size);
+        _array = new std::string[initial_size];
         _capacity = 0;
         _length = initial_size;
     };
 
     unordered_set::~unordered_set() {
-        for (unsigned int i = 0; i < _length; ++i) {
-            if (_array[i] != nullptr && _array[i] != DELLPTR) {
-                delete _array[i];
-            }
-        }
-        delete this->_array;
+        delete[] _array;
     };
 
     // алгоритм добавления
@@ -176,31 +162,31 @@ namespace my {
         bool deleted_was = false;
         for (unsigned int i = 0; i < _length; i++) {
             unsigned int index = qp_generator.next();
-            if (_array[index] == nullptr) { // если нашли пустое
+            if (_array[index] == std::string()) { // если нашли пустое
                 if (deleted_was) {
-                    _array[first_deleted] = new std::string(str);
+                    _array[first_deleted] = str;
                 } else {
-                    _array[index] = new std::string(str);
+                    _array[index] = str;
                 }
                 ++_capacity;
                 return true;
-            } else if (_array[index] == DELLPTR) { // если нашли удалённое
+            } else if (_array[index] == std::string("␡")) { // если нашли удалённое
                 if (!deleted_was) {
                     deleted_was = true;
                     first_deleted = index;
                 }
-            } else if (*_array[index] == str) { // если нашли вставляемое значение
+            } else if (_array[index] == str) { // если нашли вставляемое значение
                 return false;
             }
             // если нашли неравную строку, то просто идём дальше.
         }
         // попадаем сюда, если в map нет nullptr значений, только удалённые и не равные
         if (deleted_was) {
-            _array[first_deleted] = new std::string(str);
+            _array[first_deleted] = str;
             ++_capacity;
             return true;
         }
-        throw std::overflow_error("Resize() was incorrect, no dell or null pointers, adding is not possible.");
+        throw std::exception(); // overflow_error("Resize() was incorrect, no ␡ or null pointers, adding is not possible.");
     };
 
 
@@ -208,16 +194,15 @@ namespace my {
     // ищем для каждого, пока не встретим пустое значение
     bool unordered_set::erase(const std::string &str) {
         // последовательность индексов, в которых будем искать значения
-        quadratic_probing qp_generator = quadratic_probing(hash(str, this->_length), this->_length);
+        quadratic_probing qp_generator = quadratic_probing(hash(str, _length), _length);
         for (unsigned int i = 0; i < _length; i++) {
             unsigned int index = qp_generator.next();
-            if (_array[index] == nullptr) {
+            if (_array[index] == std::string()) {
                 return false;
-            } else if (_array[index] == DELLPTR) {
+            } else if (_array[index] == std::string("␡")) {
                 // continue
-            } else if (*_array[index] == str) {
-                delete _array[index];
-                _array[index] = DELLPTR;
+            } else if (_array[index] == str) {
+                _array[index] = std::string("␡");
                 --_capacity;
                 return true;
             }
@@ -236,11 +221,11 @@ namespace my {
         quadratic_probing qp_generator = quadratic_probing(hash(str, _length), _length);
         for (unsigned int i = 0; i < _length; i++) {
             unsigned int index = qp_generator.next();
-            if (_array[index] == nullptr) {
+            if (_array[index] == std::string()) {
                 return false;
-            } else if (_array[index] == DELLPTR) {
+            } else if (_array[index] == std::string("␡")) {
                 // continue
-            } else if (*_array[index] == str) {
+            } else if (_array[index] == str) {
                 return true;
             }
         }
@@ -249,35 +234,34 @@ namespace my {
 
     void unordered_set::resize() {
         unsigned int _new_length = _length * 4;
-        std::string **_array_tmp = new std::string *[_new_length];
-        std::memset(_array_tmp, 0, sizeof(std::string *) * _new_length);
+        std::string *_array_tmp = new std::string[_new_length];
         for (unsigned int i = 0; i < _length; ++i) {
-            if (_array[i] != nullptr && _array[i] != DELLPTR) {
+            if (_array[i] != std::string() && _array[i] != std::string("␡")) {
                 // для каждого не пустого и не удалённого элемента массива
                 // создаём последовательность индексов, в которые будем добавлять значение
-                quadratic_probing qp_generator = quadratic_probing(hash(*_array[i], _new_length), _new_length);
+                quadratic_probing qp_generator = quadratic_probing(hash(_array[i], _new_length), _new_length);
                 for (unsigned int j = 0; j < _new_length; j++) {
                     unsigned int index = qp_generator.next();
-                    if (_array_tmp[index] == nullptr) { // если нашли пустое
-                        _array_tmp[index] = _array[i];
+                    if (_array_tmp[index] == std::string()) { // если нашли пустое
+                        _array_tmp[index] = std::move(_array[i]);
                         break;
                     }
                 }
             }
         }
-        delete _array;
+        delete[] _array;
         _length = _new_length;
         _array = _array_tmp;
     }
 
     void unordered_set::debag_print() const {
         for (unsigned int i = 0; i < _length; i++) {
-            if (this->_array[i] == nullptr) { // если нет значения
+            if (_array[i] == std::string()) { // если нет значения
                 std::cout << i << ": " << "␀\n";
-            } else if (this->_array[i] == DELLPTR) {
+            } else if (this->_array[i] == std::string("␡")) {
                 std::cout << i << ": " << "␡\n";
             } else {
-                std::cout << i << ": " << *this->_array[i] << "\n";
+                std::cout << i << ": " << _array[i] << "\n";
             }
         }
     };
@@ -314,5 +298,6 @@ int main() {
         }
         // string_set.debag_print();
     }
+
     return 0;
 }
