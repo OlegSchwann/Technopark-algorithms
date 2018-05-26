@@ -4,11 +4,11 @@
 
 #include <cassert>
 #include "CArcGraph.hpp"
+#include <boost/range/irange.hpp>
 
 CArcGraph::CArcGraph(const IGraph &other) : number_of_vertices(other.VerticesCount()){
-    for(int i = 0; i < number_of_vertices; ++i){
-        std::vector<int> vertices_vector = other.GetNextVertices(i);
-        for(int vertice : vertices_vector){
+    for (int i : boost::irange(0, (int)number_of_vertices)){
+        for(int vertice : other.GetNextVertices(i)){
             edge_array.push_back({i, vertice});
         }
     }

@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cstddef>
+#include <ostream>
 
 #ifndef INC_1_IGRAPH_HPP
 #define INC_1_IGRAPH_HPP
@@ -28,6 +29,9 @@ public:
 
     // возвращает номера всех вершин, из которых можно попасть в 'vertex'.
     virtual std::vector<int> GetPrevVertices(int vertex) const = 0;
+
+    // вывод графа в виде строки [1 ⟶ 2, 2 ⟶ 4].
+    friend std::ostream& operator<<(std::ostream& os, const IGraph& graph);
 };
 
 #endif //INC_1_IGRAPH_HPP

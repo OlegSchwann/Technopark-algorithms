@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <boost/range/irange.hpp>
 #include "CSetGraph.hpp"
 
 CSetGraph::CSetGraph(int n) : array(n) {
@@ -11,10 +12,10 @@ CSetGraph::CSetGraph(int n) : array(n) {
 }
 
 CSetGraph::CSetGraph(const IGraph &other) : array(other.VerticesCount()) {
-    for(int i = 0; i < array.size(); ++i){
-        std::vector<int> next_vertices = other.GetNextVertices(i);
-        for(int vertice : next_vertices){
-            array[i].insert(vertice);
+    for (int from : boost::irange(0, (int) array.size())) {
+        std::vector<int> next_vertices = other.GetNextVertices(from);
+        for (int vertice : next_vertices) {
+            array[from].insert(vertice);
         }
     }
 };
@@ -31,7 +32,7 @@ void CSetGraph::AddEdge(int from, int to) {
 
 std::vector<int> CSetGraph::GetNextVertices(int vertex) const {
     std::vector<int> next_vertices;
-    for(int i : array[vertex]){
+    for (int i : array[vertex]) {
         next_vertices.emplace_back(i);
     }
     return next_vertices;

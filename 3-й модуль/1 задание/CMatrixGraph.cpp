@@ -3,15 +3,15 @@
 //
 
 #include <cassert>
+#include <boost/range/irange.hpp>
 #include "CMatrixGraph.hpp"
 
 CMatrixGraph::CMatrixGraph(const IGraph &other) :
         number_of_vertices(other.VerticesCount()),
         adjacency_matrix(number_of_vertices*number_of_vertices) {
-    for(int i = 0; i < number_of_vertices; ++i){
-        std::vector<int> next_vertices = other.GetNextVertices(i);
-        for (int to : next_vertices){
-            setEdge(i, to, true);
+    for (int from : boost::irange(0, number_of_vertices)){
+        for (int to : other.GetNextVertices(from)){
+            setEdge(from, to, true);
         }
     }
 };
@@ -31,7 +31,7 @@ void CMatrixGraph::AddEdge(int from, int to){
 std::vector<int> CMatrixGraph::GetNextVertices(int vertex) const{
     assert(isValidIndex(vertex));
     std::vector<int> to_vertices;
-    for (int to = 0; to < number_of_vertices; ++to){
+    for (int to : boost::irange(0, number_of_vertices)){
         if (edgeExist(vertex, to)) {
             to_vertices.emplace_back(to);
         }
@@ -43,7 +43,7 @@ std::vector<int> CMatrixGraph::GetNextVertices(int vertex) const{
 std::vector<int> CMatrixGraph::GetPrevVertices(int vertex) const{
     assert(isValidIndex(vertex));
     std::vector<int> from_vertices;
-    for (int from = 0; from < number_of_vertices; ++from){
+    for (int from : boost::irange(0, number_of_vertices)){
         if (edgeExist(from, vertex)) {
             from_vertices.emplace_back(from);
         }
