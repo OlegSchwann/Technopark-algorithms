@@ -1,31 +1,31 @@
 # [Technopark](https://park.vk.company/) algorithms
-Implementation of various algorithms in C / C++ for the first semester of Technopark.
+Реализация различных алгоритмов на С / С++ для первого семестра Технопарка.
 
-* [Dijkstra's algorithm for sparse graphs.](
+* [Алгоритм Дейкстры для разреженных графов.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/3-й%20модуль/3%20задание/main.cpp)
-* [Computation of all possible shortest paths in an undirected graph.](
+* [Вычисление всех возможных кратчайших путей в неорентированном графе.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/3-й%20модуль/2%20задание/main.cpp)
-* [4 different implementations of graph storage.](
+* [4 разных реализации хранения графов.](
   https://github.com/OlegSchwann/Technopark-algorithms/tree/master/3-й%20модуль/1%20задание)
-* [The self-balancing AVL-tree.](
+* [Самобалансирующееся АВЛ-дерево.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/2-й%20модуль/4%20задание%201%20вариант/main.cpp)
-* [The Cartesian tree.](
+* [Декартово дерево.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/2-й%20модуль/3%20задание%201%20вариант/main.cpp)
-* [Pre-order binary search tree traversal without recursion.](
+* [Обход бинарного дерева поиска в порядке pre-order без рекурсии.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/2-й%20модуль/2%20задание%202%20вариант/main.cpp)
-* [Hash table with open addressing and collision resolution by quadratic probing. Hash computation by Gorner's method.](
+* [Хеш-таблица с открытой адресацией и разрешением коллизий методом квадратичного пробирования. Вычисление хеша методом Горнера.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/2-й%20модуль/1%20задание%201%20вариант/main.cpp)
-* [LSD sorting in linear time for unsigned types.](
+* [Сортировка LSD за линейное время для беззнаковых типов.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/7%20задание%202%20вариант/main.cpp)
-* [Algorithm for search k-th order statistic (the number which would stand on position with index k in sorted array).](
+* [Алгоритм поиска k-й порядковой статистики (числа которое бы стояло на позиции с индексом k в отсортированном массиве.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/6%20задание%204%20вариант/main.cpp)
-* [Implementation of merge sorting. Finding total length of a tiling by a set of segments.](
+* [Реализация сортировки слиянием. Нахождение суммарной длины замощения множеством отрезков.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/5%20задание%203%20вариант/main.cpp)
-* [Implementation of a Queue with priority on a heap.](
+* [Реализация Очереди с приоритетом на куче.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/4%20задание%202%20вариант/main.cpp)
-* [Implementation of a queue on two stacks.](
+* [Реализация очереди на двух стеках.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/3%20задание%203%20вариант/main.cpp)
-* [Finding intersection of two arrays of non-repeating integers ordered in ascending order.](
+* [Нахождение пересечения двух массивов неповторяющихся целых чисел, упорядоченных по возрастанию.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/2%20задание%203%20вариант/main.cpp)
-* [Finding pairs of numbers from two arrays that add up to a given number.](
+* [Поиск пар чисел из двух массивов, в сумме дающих заданное число.](
   https://github.com/OlegSchwann/Technopark-algorithms/blob/master/1-й%20модуль/1%20задание%203%20вариант/main.cpp)
